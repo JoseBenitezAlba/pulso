@@ -12,7 +12,14 @@ Música local, sin anuncios ni conexión. Android 8.0 o posterior.
 
 ## Compilar
 
-Java 17, Android SDK 35 y Build Tools 35.0.0. Código Java nativo, sin dependencias externas. `build.sh` compila recursos y código, alinea y firma el APK. La clave de publicación no se incluye en el código.
+Java 17, Android SDK 35 y Build Tools 35.0.0. Código Java nativo, sin dependencias externas. `build.sh` compila recursos y código, alinea y firma el APK en `build/pulso.apk`. La clave de publicación (`build/pulso.jks`) no se incluye en el código.
+
+## Estructura
+
+- `src/es/pulso/music/`: código (`MainActivity`, `PlayerService`, `Song`).
+- `res/`: recursos. `AndroidManifest.xml`: manifiesto.
+- `tests/`: pruebas en emulador con adb y uiautomator.
+- `.github/workflows/apk.yml`: compila y publica el APK. `test.yml`: lanza las pruebas (a mano o en pull requests).
 
 ## Privacidad
 

@@ -1,4 +1,7 @@
 #!/bin/bash
+# Compila Pulso y genera build/pulso.apk firmado.
+# Necesita: JDK 17, Android SDK (platform 35 y build-tools 35.0.0) y build/pulso.jks.
+# Variables opcionales: JAVA_HOME, ANDROID_HOME, PULSO_KS_PASS (por defecto "android").
 set -euo pipefail
 cd "$(dirname "$0")"
 export JAVA_HOME="${JAVA_HOME:-$HOME/jdk}" PATH="${JAVA_HOME:-$HOME/jdk}/bin:$PATH"
@@ -12,6 +15,6 @@ jar cf build/classes.jar -C build/classes .
 cp build/base.apk build/unsigned.apk
 (cd build; zip -q unsigned.apk classes.dex)
 "$BT/zipalign" -f 4 build/unsigned.apk build/aligned.apk
-if [ ! -f build/pulso.jks ]; then echo "Falta la clave de firma" >&2; exit 1; fi
-"$BT/apksigner" sign --ks build/pulso.jks --ks-pass pass:android --out build/pulso.apk build/aligned.apk
+if [ ! -f build/pulso.jks ]; then echo "Falta la clave de firma (build/pulso.jks)" >&2; exit 1; fi
+"$BT/apksigner" sign --ks build/pulso.jks --ks-pass "pass:${PULSO_KS_PASS:-android}" --out build/pulso.apk build/aligned.apk
 "$BT/apksigner" verify --verbose build/pulso.apk
