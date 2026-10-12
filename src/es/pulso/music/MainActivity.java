@@ -71,7 +71,19 @@ public class MainActivity extends Activity {
         }
         render();
         handler.post(tick);
-        if (permission()) scan();
+        if (permission()) {
+            scan();
+            askNotifications();
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(android.content.res.Configuration config) {
+        super.onConfigurationChanged(config);
+        // Con configChanges la actividad no se recrea al rotar: volvemos a pintar la pantalla actual.
+        if (playerScreen) showPlayer();
+        else if (settingsScreen) showSettings();
+        else render();
     }
 
     private String audioPermission() {
@@ -89,11 +101,24 @@ public class MainActivity extends Activity {
         requestPermissions(new String[] {audioPermission()}, 11);
     }
 
+    // Android 13+: sin este permiso no se muestra la notificación con los controles.
+    // Se pide una sola vez, para no insistir si el usuario dice que no.
+    private void askNotifications() {
+        if (Build.VERSION.SDK_INT < 33) return;
+        if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
+                == android.content.pm.PackageManager.PERMISSION_GRANTED) return;
+        if (getPreferences(0).getBoolean("askedNotifications", false)) return;
+        getPreferences(0).edit().putBoolean("askedNotifications", true).apply();
+        requestPermissions(new String[] {Manifest.permission.POST_NOTIFICATIONS}, 12);
+    }
+
     public void onRequestPermissionsResult(int r, String[] p, int[] results) {
         super.onRequestPermissionsResult(r, p, results);
         if (r == 11) {
-            if (permission()) scan();
-            else render();
+            if (permission()) {
+                scan();
+                askNotifications();
+            } else render();
         }
     }
 
@@ -738,6 +763,14 @@ public class MainActivity extends Activity {
                                 Toast.makeText(this, "Ya está en " + name, Toast.LENGTH_SHORT)
                                         .show();
                                 return;
+                            }
+                            if (a == null) {
+                                a = new JSONArray();
+                                try {
+                                    lists.put(name, a);
+                                } catch (JSONException e) {
+                                    return;
+                                }
                             }
                             a.put(song.id);
                             save();
