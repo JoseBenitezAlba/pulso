@@ -9,6 +9,6 @@ shell('input','swipe','310','350','40','350','250');time.sleep(1);assert any(n.g
 shell('input','swipe','40','350','310','350','250');time.sleep(1)
 tap('♡');tap('Favoritos');assert any(n.get('text')=='Prueba0' for n in tree().iter('node'));snap('favoritos11')
 tap('⚙');snap('ajustes11');shell('input','tap','346','216');time.sleep(2);shell('input','keyevent','4');tap('Canciones');assert any('AUD-' in n.get('text','') for n in tree().iter('node'));tap('⚙');shell('input','tap','346','216');time.sleep(2);shell('input','keyevent','4');tap('Canciones');assert not any('AUD-' in n.get('text','') for n in tree().iter('node'))
-tap('Prueba0');time.sleep(32);tap('⌄');tap('Orden: nombre');tap('Veces reproducida');snap('orden11');assert any('1 rep.' in n.get('text','') for n in tree().iter('node'))
+tap('Prueba0');time.sleep(32);shell('input','keyevent','4');tap('Orden: nombre');tap('Veces reproducida');snap('orden11');assert any('1 rep.' in n.get('text','') for n in tree().iter('node'))
 errors=adb('logcat','-d','-s','AndroidRuntime');open('build/errors.txt','w').write(errors);assert 'FATAL EXCEPTION' not in errors
 print('OK 1.1: actualización preserva listas, mensajería oculta y reversible, gestos ambas direcciones, favoritos y contador real')
