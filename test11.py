@@ -1,7 +1,7 @@
 exec(open('test2.py').read().replace("'build/pulso.apk'","'build/old.apk'"))
 adb('install','-r','build/pulso.apk');shell('am','force-stop','es.pulso.music');shell('am','start','-n','es.pulso.music/.MainActivity');time.sleep(3)
 tap('Listas');tap('MiLista');assert any(n.get('text')=='Prueba0' for n in tree().iter('node'));shell('input','keyevent','4');tap('Canciones')
-shell('mkdir','-p','/sdcard/WhatsApp/Media/WhatsApp Audio');adb('push','build/Prueba1.wav','/sdcard/WhatsApp/Media/WhatsApp Audio/AUD-20261012-WA0001.wav');shell('am','broadcast','-a','android.intent.action.MEDIA_SCANNER_SCAN_FILE','-d','file:///sdcard/WhatsApp/Media/WhatsApp%20Audio/AUD-20261012-WA0001.wav');time.sleep(3);tap('↻');time.sleep(2)
+shell('mkdir','-p','/sdcard/WhatsApp/Audio');adb('push','build/Prueba1.wav','/sdcard/WhatsApp/Audio/AUD-20261012-WA0001.wav');shell('am','broadcast','-a','android.intent.action.MEDIA_SCANNER_SCAN_FILE','-d','file:///sdcard/WhatsApp/Audio/AUD-20261012-WA0001.wav');time.sleep(3);tap('↻');time.sleep(2)
 assert not any('AUD-' in n.get('text','') for n in tree().iter('node'))
 shell('input','swipe','40','350','310','350','250');time.sleep(1);assert any(n.get('text')=='+  Crear lista' for n in tree().iter('node'))
 shell('input','swipe','310','350','40','350','250');time.sleep(1);assert any(n.get('text')=='Prueba0' for n in tree().iter('node'))
