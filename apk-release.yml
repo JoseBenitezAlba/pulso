@@ -1,0 +1,38 @@
+name: APK
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '*.java'
+      - 'AndroidManifest.xml'
+      - 'icon.xml'
+      - 'build.sh'
+      - '.github/workflows/apk.yml'
+permissions:
+  contents: write
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Preparar proyecto
+        env:
+          KEYSTORE: ${{ secrets.PULSO_KEYSTORE }}
+        run: |
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-35' 'build-tools;35.0.0'
+          mkdir -p src/es/pulso/music res/drawable build
+          cp MainActivity.java PlayerService.java Song.java src/es/pulso/music/
+          cp icon.xml res/drawable/
+          printf '%s' "$KEYSTORE" | base64 -d > build/pulso.jks
+          bash build-release.sh
+      - name: Publicar APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp build/pulso.apk pulso.apk
+          gh release view v1.0 >/dev/null 2>&1 || gh release create v1.0 --title 'Pulso 1.0' --notes 'Música local y listas propias. Android 8.0 o posterior.'
+          gh release upload v1.0 pulso.apk --clobber
