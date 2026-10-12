@@ -12,7 +12,7 @@ Música local, sin anuncios ni conexión. Android 8.0 o posterior.
 
 ## Compilar
 
-Java 17, Android SDK 35 y Build Tools 35.0.0. Código Java nativo, sin dependencias externas. `build.sh` compila recursos y código, alinea y firma el APK en `build/pulso.apk`. La clave de publicación (`build/pulso.jks`) no se incluye en el código.
+Java 17, Android SDK 35 y Build Tools 35.0.0. Código Java nativo, sin dependencias externas. `build.sh` compila recursos y código, alinea y firma el APK en `build/pulso.apk`. La clave de publicación (`build/pulso.jks`) no se incluye en el código. Guía paso a paso desde cero (instalar Java, SDK, firmar e instalar en el móvil): [COMPILAR.md](COMPILAR.md).
 
 ## Estructura
 
