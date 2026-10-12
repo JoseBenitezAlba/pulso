@@ -1,0 +1,52 @@
+name: Verificar listas
+on: [workflow_dispatch, push]
+permissions:
+  contents: write
+jobs:
+  probar:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+      - name: Compilar
+        env:
+          KEYSTORE: ${{ secrets.PULSO_KEYSTORE }}
+        run: |
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-35' 'build-tools;35.0.0'
+          mkdir -p src/es/pulso/music res/drawable build
+          cp MainActivity.java PlayerService.java Song.java src/es/pulso/music/
+          cp icon.xml res/drawable/
+          printf '%s' "$KEYSTORE" | base64 -d > build/pulso.jks
+          bash build-release.sh
+      - name: Activar emulador
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          arch: x86_64
+          profile: pixel_2
+          script: python3 test2.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: prueba-android
+          path: |
+            build/*.png
+            build/*.apk
+            build/errors.txt
+      - name: Guardar evidencia
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view pruebas >/dev/null 2>&1 || gh release create pruebas --prerelease --title 'Pruebas Android' --notes 'Capturas y APK de verificación. No es la entrega final.'
+          gh release upload pruebas build/*.png build/pulso.apk --clobber
