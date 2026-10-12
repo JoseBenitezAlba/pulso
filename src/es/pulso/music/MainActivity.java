@@ -71,10 +71,7 @@ public class MainActivity extends Activity {
         }
         render();
         handler.post(tick);
-        if (permission()) {
-            scan();
-            askNotifications();
-        }
+        if (permission()) scan();
     }
 
     @Override
@@ -101,24 +98,11 @@ public class MainActivity extends Activity {
         requestPermissions(new String[] {audioPermission()}, 11);
     }
 
-    // Android 13+: sin este permiso no se muestra la notificación con los controles.
-    // Se pide una sola vez, para no insistir si el usuario dice que no.
-    private void askNotifications() {
-        if (Build.VERSION.SDK_INT < 33) return;
-        if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
-                == android.content.pm.PackageManager.PERMISSION_GRANTED) return;
-        if (getPreferences(0).getBoolean("askedNotifications", false)) return;
-        getPreferences(0).edit().putBoolean("askedNotifications", true).apply();
-        requestPermissions(new String[] {Manifest.permission.POST_NOTIFICATIONS}, 12);
-    }
-
     public void onRequestPermissionsResult(int r, String[] p, int[] results) {
         super.onRequestPermissionsResult(r, p, results);
         if (r == 11) {
-            if (permission()) {
-                scan();
-                askNotifications();
-            } else render();
+            if (permission()) scan();
+            else render();
         }
     }
 

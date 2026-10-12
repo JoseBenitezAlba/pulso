@@ -33,5 +33,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           cp build/pulso.apk pulso.apk
-          gh release view v1.0 >/dev/null 2>&1 || gh release create v1.0 --title 'Pulso 1.0' --notes 'Música local y listas propias. Android 8.0 o posterior.'
-          gh release upload v1.0 pulso.apk --clobber
+          # La etiqueta sale del manifest, para que la 1.1 no se publique como 1.0
+          VERSION=$(grep -o 'versionName="[^"]*"' AndroidManifest.xml | cut -d'"' -f2)
+          gh release view "v$VERSION" >/dev/null 2>&1 || gh release create "v$VERSION" --title "Pulso $VERSION" --notes 'Música local y listas propias. Android 8.0 o posterior.'
+          gh release upload "v$VERSION" pulso.apk --clobber
