@@ -1,4 +1,4 @@
-exec(open('test2.py').read().replace("'build/pulso.apk'","'build/old.apk'").replace("n.get('text','').casefold()==text.casefold()","n.get('text','').casefold().startswith(text.casefold())"))
+exec(open('tests/test_basico.py').read().replace("'build/pulso.apk'","'build/old.apk'").replace("n.get('text','').casefold()==text.casefold()","n.get('text','').casefold().startswith(text.casefold())"))
 adb('install','-r','build/pulso.apk');shell('am','force-stop','es.pulso.music');shell('am','start','-n','es.pulso.music/.MainActivity');time.sleep(3)
 tap('Listas');tap('MiLista');assert any(n.get('text')=='Prueba0' for n in tree().iter('node'));shell('input','keyevent','4');tap('Canciones')
 shell('mkdir','-p','/sdcard/WhatsApp/Audio');adb('push','build/Prueba1.wav','/sdcard/WhatsApp/Audio/AUD-20261012-WA0001.wav');shell('am','broadcast','-a','android.intent.action.MEDIA_SCANNER_SCAN_FILE','-d','file:///sdcard/WhatsApp/Audio/AUD-20261012-WA0001.wav');time.sleep(3);tap('↻');time.sleep(2)

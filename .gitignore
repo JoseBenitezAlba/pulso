@@ -2,3 +2,5 @@ build/
 *.jks
 *.keystore
 local.properties
+*.class
+evidencia/
